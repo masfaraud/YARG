@@ -14,7 +14,7 @@
     "rootDir": "src",
     "types": [
       "@babylonjs/core",
-      "babylonjs-gui",
+      "@babylonjs/gui",
       "babylonjs-materials"
   ],
   }

@@ -13,6 +13,10 @@ export class SpaceCraft{
     speed: Vector3;
     fuel_capacity: number;
     throttle: number;
+    engine_sound: Sound;
+    smoke: ParticleSystem;
+
+    fire_plane: Mesh;
     // components: Component[]
 
     constructor(private scene:Scene) {
@@ -20,7 +24,6 @@ export class SpaceCraft{
 
         this.speed = new Vector3(0., 0., 0.)
         this.fuel_capacity = 10000.
-        this.throttle = 0.
 
         var white_paint = new StandardMaterial("white_paint", scene);
         white_paint.diffuseColor = new Color3(0.95, 0.98, 0.95);
@@ -52,88 +55,93 @@ export class SpaceCraft{
         fire.diffuseTexture = new Texture("textures/fire.png", scene);
         fire.distortionTexture = new Texture("textures/distortion.png", scene);
         fire.opacityTexture = new Texture("textures/candleopacity.png", scene);
-        fire.speed = 5.0;
+        fire.speed = 15.0;
 
-        var plane = MeshBuilder.CreatePlane("fireplane", {size: 1.5}, scene);
-        plane.parent = this.nozzle;
-		plane.position.y -= 5;
-        plane.scaling.x = 1.5;
-        plane.scaling.y = -10;
-		plane.billboardMode = Mesh.BILLBOARDMODE_Y;
-		plane.material = fire;
-        plane.material.shadowDepthWrapper = new ShadowDepthWrapper(plane.material);
+        this.fire_plane = MeshBuilder.CreatePlane("fireplane", {size: 1.}, scene);
+        this.fire_plane.parent = this.nozzle;
+		this.fire_plane.position.y -= 5;
+        this.fire_plane.scaling.x = 1.5;
+        this.fire_plane.scaling.y = 0.;
+		this.fire_plane.billboardMode = Mesh.BILLBOARDMODE_Y;
+		this.fire_plane.material = fire;
+        this.fire_plane.material.shadowDepthWrapper = new ShadowDepthWrapper(this.fire_plane.material);
 
 
         // Smoke
         // Create a particle system
-        var particleSystem = new ParticleSystem("particles", 8000, scene);
+        var smoke = new ParticleSystem("particles", 8000, scene);
 
         //Texture of each particle
-        particleSystem.particleTexture = new Texture("https://raw.githubusercontent.com/PatrickRyanMS/BabylonJStextures/master/FFV/smokeParticleTexture.png", scene);
+        smoke.particleTexture = new Texture("https://raw.githubusercontent.com/PatrickRyanMS/BabylonJStextures/master/FFV/smokeParticleTexture.png", scene);
 
-        particleSystem.emitter = this.nozzle;
+        smoke.emitter = this.nozzle;
 
         // lifetime
-        particleSystem.minLifeTime = 2;
-        particleSystem.maxLifeTime = 10;
+        smoke.minLifeTime = 2;
+        smoke.maxLifeTime = 30;
 
         // emit rate
-        particleSystem.emitRate = 1000;
+        smoke.emitRate = 0.;
 
         // gravity
-        particleSystem.gravity = new Vector3(0., -60, 0);
+        // smoke.gravity = new Vector3(0.,0, 0);
 
         // size gradient
-        particleSystem.addSizeGradient(0, 0.6, 1);
-        particleSystem.addSizeGradient(0.3, 1, 2);
-        particleSystem.addSizeGradient(0.5, 2, 3);
-        particleSystem.addSizeGradient(1.0, 6, 8);
+        smoke.addSizeGradient(0, 0.6, 1);
+        smoke.addSizeGradient(0.3, 1, 2);
+        smoke.addSizeGradient(0.5, 2, 3);
+        smoke.addSizeGradient(1.0, 6, 8);
 
         // color gradient
-        particleSystem.addColorGradient(0, new Color4(0.5, 0.5, 0.5, 0),  new Color4(0.8, 0.8, 0.8, 0));
-        particleSystem.addColorGradient(0.4, new Color4(0.1, 0.1, 0.1, 0.1), new Color4(0.4, 0.4, 0.4, 0.4));
-        particleSystem.addColorGradient(0.7, new Color4(0.03, 0.03, 0.03, 0.2), new Color4(0.3, 0.3, 0.3, 0.4));
-        particleSystem.addColorGradient(1.0, new Color4(0.0, 0.0, 0.0, 0), new Color4(0.03, 0.03, 0.03, 0));
+        smoke.addColorGradient(0, new Color4(0.5, 0.5, 0.5, 0),  new Color4(0.8, 0.8, 0.8, 0));
+        smoke.addColorGradient(0.4, new Color4(0.1, 0.1, 0.1, 0.1), new Color4(0.4, 0.4, 0.4, 0.4));
+        smoke.addColorGradient(0.7, new Color4(0.03, 0.03, 0.03, 0.2), new Color4(0.3, 0.3, 0.3, 0.4));
+        smoke.addColorGradient(1.0, new Color4(0.0, 0.0, 0.0, 0), new Color4(0.03, 0.03, 0.03, 0));
 
         // speed gradient
-        particleSystem.addVelocityGradient(0, 1, 1.5);
-        particleSystem.addVelocityGradient(0.1, 0.8, 0.9);
-        particleSystem.addVelocityGradient(0.7, 0.4, 0.5);
-        particleSystem.addVelocityGradient(1, 0.1, 0.2);
+        smoke.addVelocityGradient(0, 1, 1.5);
+        smoke.addVelocityGradient(0.1, 0.8, 0.9);
+        smoke.addVelocityGradient(0.7, 0.4, 0.5);
+        smoke.addVelocityGradient(1, 0.1, 0.2);
 
         // rotation
-        particleSystem.minInitialRotation = 0;
-        particleSystem.maxInitialRotation = Math.PI;
-        particleSystem.minAngularSpeed = -1;
-        particleSystem.maxAngularSpeed = 1;
+        smoke.minInitialRotation = 0;
+        smoke.maxInitialRotation = Math.PI;
+        smoke.minAngularSpeed = -1;
+        smoke.maxAngularSpeed = 1;
 
         // blendmode
-        particleSystem.blendMode = ParticleSystem.BLENDMODE_STANDARD;
+        smoke.blendMode = ParticleSystem.BLENDMODE_STANDARD;
         
         // emitter shape
-        var sphereEmitter = particleSystem.createSphereEmitter(0.1);
+        var sphereEmitter = smoke.createSphereEmitter(0.1);
 
         // Where the particles come from
-        particleSystem.emitter = new Vector3(0, 0, 0); // the starting object, the emitter
-        particleSystem.minEmitBox = new Vector3(-0.5, -10, -0.5); // Starting all from
-        particleSystem.maxEmitBox = new Vector3(0.5, 10, 0.5); // To...
+        smoke.emitter = this.nozzle;
+        smoke.minEmitBox = new Vector3(-0.5, -10, -0.5); // Starting all from
+        smoke.maxEmitBox = new Vector3(0.5, 10, 0.5); // To...
 
         // Start the particle system
-        particleSystem.start();
+        smoke.start();
+
+        this.smoke = smoke;
 
         // Engine sound
 
-        const music = new Sound("engine_noise", "sounds/engine.wav", scene, null, {
+        this.engine_sound = new Sound("engine_noise", "sounds/engine.wav", scene, null, {
             loop: true,
             autoplay: true,
             spatialSound: true,
             distanceModel: "linear",
             // rolloffFactor: 2,
             maxDistance: 5000,
-            volume:3
+            volume:0.
           });
 
-          music.attachToMesh(this.nozzle);
+        this.engine_sound.attachToMesh(this.nozzle);
+
+
+        this.update_throttle(0.)
 
     }
 
@@ -141,22 +149,43 @@ export class SpaceCraft{
         return 10000 + this.fuel_capacity;
     }
 
+    update_throttle(throttle: number){
+        this.throttle = throttle;
+
+        this.fire_plane.scaling.y = -15*throttle;
+        this.fire_plane.position.y = -6*throttle + 1;
+
+        this.smoke.emitRate = 5000 * this.throttle;
+
+        if (this.throttle === 0.){
+            this.engine_sound.setVolume(0.)
+        }
+        else{
+            this.engine_sound.setVolume(0.5+3.5*this.throttle);
+        }
+
+    }
+
+    shake_amplitude(){
+        return this.throttle * 0.002;
+    }
+
     engine_force(){
-        return 98500;
+        return this.throttle * 98900;
     }
 
     consume_fuel(delta_time: number){
-        this.fuel_capacity -= delta_time*this.fuel_consumtion()
+        this.fuel_capacity -= delta_time*this.fuel_flow()
     }
 
-    fuel_consumtion(){
+    fuel_flow(){
         return this.throttle * 50.
     }
 
     get_forces(){
 
         // Gravity
-        var forces = new Vector3(0, -this.mass()*9.81, 0)
+        var forces = new Vector3(0, -this.mass()*0.5, 0)
 
         // // stages 
         // for (let component of this.components){
