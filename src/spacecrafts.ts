@@ -5,6 +5,8 @@ export class Component{
 
 }
 
+// const SCALE = 0.001;
+
 export class SpaceCraft{
     root: TransformNode;
     stage: Mesh;
@@ -20,7 +22,8 @@ export class SpaceCraft{
     // components: Component[]
 
     constructor(private scene:Scene) {
-        this.root = new TransformNode('Spacecraft', scene);
+        this.root = new TransformNode('Spacecraft', scene, true);
+        // this.root = new Entity('Spacecraft', scene);
 
         this.speed = new Vector3(0., 0., 0.)
         this.fuel_capacity = 10000.
@@ -31,18 +34,18 @@ export class SpaceCraft{
         var black_paint = new StandardMaterial("black_paint", scene);
         black_paint.diffuseColor = new Color3(0.05, 0.03, 0.05);
 
-        this.stage = MeshBuilder.CreateCylinder("rocket", { diameter: 2 , height:20}, scene);
+        this.stage = MeshBuilder.CreateCylinder("rocket", { diameter: 2. , height: 20.}, scene);
         this.stage.material = white_paint;
         this.stage.parent = this.root
 
 
-        this.fairing = MeshBuilder.CreateCylinder("fairing", { diameterTop: 0.1, diameterBottom:2, height:4}, scene);
-        this.fairing.position = new Vector3(0, 12, 0);
+        this.fairing = MeshBuilder.CreateCylinder("fairing", { diameterTop: 0.1, diameterBottom:2., height:4.}, scene);
+        this.fairing.position = new Vector3(0., 12., 0.);
         this.fairing.material = white_paint;
         this.fairing.parent = this.root
         
-        this.nozzle = MeshBuilder.CreateCylinder("nozzle", { diameterTop: 1.7 , diameterBottom:2.8, height:2}, scene);
-        this.nozzle.position = new Vector3(0, -11, 0);
+        this.nozzle = MeshBuilder.CreateCylinder("nozzle", { diameterTop: 1.7 , diameterBottom:2.8, height:2.}, scene);
+        this.nozzle.position = new Vector3(0., -11., 0.);
         this.nozzle.material = black_paint;
         this.nozzle.parent = this.root
         
@@ -134,7 +137,7 @@ export class SpaceCraft{
             spatialSound: true,
             distanceModel: "linear",
             // rolloffFactor: 2,
-            maxDistance: 5000,
+            maxDistance: 5000.,
             volume:0.
           });
 
@@ -146,16 +149,16 @@ export class SpaceCraft{
     }
 
     mass(){
-        return 10000 + this.fuel_capacity;
+        return 10000. + this.fuel_capacity;
     }
 
     update_throttle(throttle: number){
         this.throttle = throttle;
 
-        this.fire_plane.scaling.y = -15*throttle;
-        this.fire_plane.position.y = -6*throttle + 1;
+        this.fire_plane.scaling.y = -15.*throttle;
+        this.fire_plane.position.y = -6.*throttle + 1.;
 
-        this.smoke.emitRate = 5000 * this.throttle;
+        this.smoke.emitRate = 5000. * this.throttle;
 
         if (this.throttle === 0.){
             this.engine_sound.setVolume(0.)
@@ -171,7 +174,7 @@ export class SpaceCraft{
     }
 
     engine_force(){
-        return this.throttle * 98900;
+        return this.throttle * 98900.;
     }
 
     consume_fuel(delta_time: number){
@@ -185,7 +188,7 @@ export class SpaceCraft{
     get_forces(){
 
         // Gravity
-        var forces = new Vector3(0, -this.mass()*0.5, 0)
+        var forces = new Vector3(0., -this.mass()*0.5, 0.)
 
         // // stages 
         // for (let component of this.components){

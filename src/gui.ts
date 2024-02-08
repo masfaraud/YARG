@@ -9,12 +9,16 @@ export class GUI{
     altitude_gauge: TextBlock;
     speed_gauge: TextBlock;
 
+    keys_down: any;
+
     scene: Scene;
 
     constructor(
+        
         // canvas: HTMLCanvasElement,
          scene:Scene, spacecraft: SpaceCraft){
 
+        this.keys_down = {}
 
         // Babylon GUI
         var advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
@@ -151,9 +155,28 @@ export class GUI{
     
     }
 
-    update(){
+    updateDisplay(){
         this.altitude_gauge.text = String(this.spacecraft.root.position.y.toFixed(0)) + " m"
         this.speed_gauge.text = String(this.spacecraft.speed.length().toFixed(0)) + " m/s"
+        
+    }
+
+    updateControls(delta_time: number){
+        if (this.keys_down['Shift']){
+            this.throttle.value -= delta_time * 0.5;
+        }
+        if (this.keys_down['CapsLock']){
+            this.throttle.value += delta_time * 0.5;
+        }
+    }
+
+    updateDownKeys(event){
+        if (event.type == 'keydown'){
+            this.keys_down[event.key] = true;
+        }
+        else if (event.type == 'keyup'){
+            this.keys_down[event.key] = false;
+        }
         
     }
 

@@ -7,10 +7,10 @@ export class Earth{
     radius: number;
 
     constructor(private scene:Scene) {
-        this.radius = 6371000.;
-        this.mesh = MeshBuilder.CreateSphere("earth", { diameter: 2*this.radius}, scene);
+        this.radius = 6371000;
+        this.mesh = MeshBuilder.CreateSphere("earth", { diameter: 2.*this.radius}, scene);
 
-        this.mesh.position.y = -this.radius;
+        // this.mesh.position.y = -this.radius;
 
         var earthMaterial = new StandardMaterial("earthMaterial", scene);
         var earth_diffuse_texture = new Texture("textures/earth.jpeg", scene);
@@ -21,16 +21,16 @@ export class Earth{
         this.mesh.rotate(new Vector3(0., 1., 0.), -96.0 * Math.PI / 180.);
 
         // Ground
-        var ground = MeshBuilder.CreateGroundFromHeightMap("ground", "textures/heightmap2.png", {width: 47350., height: 47350., subdivisions: 500, minHeight:100., maxHeight: 3000.}, scene);
+        var ground = MeshBuilder.CreateGroundFromHeightMap("ground", "textures/heightmap2.png", {width: 47350, height: 47350, subdivisions: 500, minHeight:100, maxHeight: 3000.}, scene);
         var groundMaterial = new StandardMaterial("ground", scene);
         var diffuse_texture = new Texture("textures/ground.jpg", scene);
 
-        diffuse_texture.uScale = 12;
-        diffuse_texture.vScale = 12;
+        diffuse_texture.uScale = 12.;
+        diffuse_texture.vScale = 12.;
         groundMaterial.diffuseTexture = diffuse_texture
         
         groundMaterial.specularColor = new Color3(0., 0., 0.);
-        // ground.position.y = 6371000;
+        ground.position.y = this.radius;
         
         ground.scaling.x = -1;
         
@@ -50,7 +50,7 @@ export class Earth{
         //skyboxMaterial._cachedDefines.FOG = true;
 
         // Sky mesh (box)
-        var skybox = MeshBuilder.CreateBox("skyBox", {size: 100*this.radius}, scene);
+        var skybox = MeshBuilder.CreateBox("skyBox", {size: 100.*this.radius}, scene);
         skybox.material = skyboxMaterial;
     }
 }
