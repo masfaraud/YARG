@@ -212,7 +212,8 @@ export class GUI {
 
         // Back to zero controls
         for (let control_config of this.control_configs) {
-            let value = control_config.slider.value;
+            // let value = control_config.slider.value;
+
             if (this.keys_down[control_config.key1]) {
                 control_config.slider.value -= delta_time * control_config.sensitivity_up;
             }
